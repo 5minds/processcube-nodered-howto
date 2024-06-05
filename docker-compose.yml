@@ -1,0 +1,21 @@
+version: '3.5'
+services:
+  authority:
+    image: 5minds/processcube_authority:2024-1
+    ports:
+      - 11560:11560
+    volumes:
+      - ./.processcube/authority/config:/etc/authority/config:ro
+    environment:
+      UPE_SEED_PATH: /etc/authority/config/upeSeedingData.json
+
+  engine:
+    image: 5minds/processcube_engine:2024-1
+    ports:
+      - 8000:80
+    volumes:
+      - ./.processcube/engine/config:/etc/engine/config:ro
+      - ./processes:/processes:ro
+    environment:
+      CONFIG_PATH: /etc/engine/config/config.json
+    command: --seed-dir=/processes

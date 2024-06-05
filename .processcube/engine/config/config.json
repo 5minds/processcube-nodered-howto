@@ -1,0 +1,29 @@
+{
+  "httpServer": {
+    "host": "0.0.0.0"
+  },
+  "logging": {
+    "outputPath": "logs",
+    "minLogLevel": "info"
+  },
+  "database": {
+    "username": null,
+    "password": null,
+    "database": null,
+    "host": null,
+    "port": null,
+    "dialect": "sqlite",
+    "storage": "engine.sqlite",
+    "supportBigNumbers": true,
+    "resetPasswordRequestTimeToLive": 12,
+    "logging": false
+  },
+  "iam": {
+    "baseUrl": "http://authority:11560",
+    "clientId": "5minds_engine",
+    "clientSecret": "5minds_engine"
+  },
+  "application": {
+    "name": "5Minds Engine"
+  }
+}

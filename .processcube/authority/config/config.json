@@ -1,0 +1,45 @@
+{
+  "issuerUrl": "http://authority:11560",
+  "applicationPort": 11560,
+  "development": {
+    "builtInReactDevServer": false,
+    "detailedErrors": true,
+    "disableHttpsEnforcement": true,
+    "enableLocalhostImplicit": true,
+    "fixWrongHostnames": true
+  },
+  "studio": true,
+  "engines": [
+    {
+      "clientId": "5minds_engine",
+      "clientSecret": "5minds_engine"
+    }
+  ],
+  "otherClients": [
+    {
+      "clientId": "processcube-nodered-howto",
+      "clientSecret": "processcube-nodered-howto",
+      "scope": "openid profile email engine_read engine_write",
+      "grant_types": ["authorization_code", "refresh_token"],
+      "response_types": ["code"],
+      "redirect_uris": ["http://localhost:3000/api/auth/callback/authority"]
+    }
+  ],
+  "database": {
+    "dialect": "sqlite",
+    "storage": "storage/database.sqlite",
+    "logging": false
+  },
+  "extensions": {
+    "path": "/app/extensions",
+    "configs": {
+      "username_password": {}
+    }
+  },
+  "externalTaskWorkers": [
+    {
+      "clientId": "external_task_worker",
+      "clientSecret": "external_task_worker_secret"
+    }
+  ]
+}
