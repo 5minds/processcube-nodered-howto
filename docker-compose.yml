@@ -5,17 +5,33 @@ services:
     ports:
       - 11560:11560
     volumes:
-      - ./.processcube/authority/config:/etc/authority/config:ro
+      - ./.processcube/authority/config/config.json:/etc/authority/config/config.json
+      - ./.processcube/authority/config/upeSeedingData.json:/etc/authority/upeSeedingData.json
     environment:
-      UPE_SEED_PATH: /etc/authority/config/upeSeedingData.json
+      - CONFIG_PATH=/etc/authority/config/config.json
+      - UPE_SEED_PATH=/etc/authority/upeSeedingData.json
 
   engine:
-    image: 5minds/processcube_engine:2024-1
+    image: 5minds/engine:17.0.1-extensions-0.27.0
     ports:
-      - 8000:80
+      - 8000:8000
     volumes:
-      - ./.processcube/engine/config:/etc/engine/config:ro
+      - ./.processcube/engine/db:/database
       - ./processes:/processes:ro
     environment:
-      CONFIG_PATH: /etc/engine/config/config.json
+      - httpServer__port=8000
+      - application__name=processcube-nodered-howto.de
+      - database__storage=/database/engine.sqlite
     command: --seed-dir=/processes
+
+  nodered:
+    image: 5minds/processcube_nodered:howto
+    build:
+      context: nodered
+    ports:
+      - 1880:1880
+    environment:
+      - ENGINE_URL=http://engine:8000
+      - FLOWS=/nodered/example-flows.json
+    volumes:
+      - ./nodered/:/nodered/

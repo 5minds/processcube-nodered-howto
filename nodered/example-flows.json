@@ -1,0 +1,140 @@
+[
+    {
+        "id": "d7435648b8456563",
+        "type": "tab",
+        "label": "Bauteil schleifen",
+        "disabled": false,
+        "info": "# Bauteil schleifen\n\nDer Flow steuert die CNC-Maschine bei der Bearbeitung des Bauteils.\n",
+        "env": []
+    },
+    {
+        "id": "f439e97aaad90c7c",
+        "type": "tab",
+        "label": "Bauteil einmessen",
+        "disabled": false,
+        "info": "# Das Bauteil wird durch die Maschiene eingemessen.",
+        "env": []
+    },
+    {
+        "id": "a7555c6c9292f89d",
+        "type": "processcube-engine-config",
+        "url": "http://engine:8000"
+    },
+    {
+        "id": "866b130ffae616f0",
+        "type": "externaltask-input",
+        "z": "d7435648b8456563",
+        "name": "Bauteil schleifen gestartet",
+        "engine": "a7555c6c9292f89d",
+        "topic": "bauteil-schleifen",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "f3eec69684c6a050"
+            ]
+        ]
+    },
+    {
+        "id": "f3eec69684c6a050",
+        "type": "delay",
+        "z": "d7435648b8456563",
+        "name": "Maschine wird gesteuert",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "c7aaff06cbd216a8"
+            ]
+        ]
+    },
+    {
+        "id": "c7aaff06cbd216a8",
+        "type": "externaltask-output",
+        "z": "d7435648b8456563",
+        "name": "Bauteil schleifen abgeschlossen",
+        "x": 770,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "aeb6fcd61f9f68b7",
+        "type": "externaltask-input",
+        "z": "f439e97aaad90c7c",
+        "name": "Bauteileinmessung gestartet",
+        "engine": "a7555c6c9292f89d",
+        "topic": "bauteil-einmessen",
+        "x": 160,
+        "y": 140,
+        "wires": [
+            [
+                "1c8aac8d36688a69"
+            ]
+        ]
+    },
+    {
+        "id": "8ed256ee7ffe735e",
+        "type": "externaltask-output",
+        "z": "f439e97aaad90c7c",
+        "name": "Bauteilmessung durchgeführt",
+        "x": 1010,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "b7811129d209e4ab",
+        "type": "function",
+        "z": "f439e97aaad90c7c",
+        "name": "Messwerte prüfen",
+        "func": "var messwert = msg.payload;\nvar mindestHoehe = 40;\nvar maximaleHoehe = 80;\n\nvar istAusserhalbMessbereich = messwert < mindestHoehe && messwert > maximaleHoehe;\n\nvar newMsg = { payload: { \"istAusserhalbMessbereich\": istAusserhalbMessbereich }, externalTaskId: msg.externalTaskId };\nreturn newMsg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 140,
+        "wires": [
+            [
+                "8ed256ee7ffe735e"
+            ]
+        ]
+    },
+    {
+        "id": "1c8aac8d36688a69",
+        "type": "http request",
+        "z": "f439e97aaad90c7c",
+        "name": "Bauteil einmessen",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=plain&rnd=new",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 490,
+        "y": 140,
+        "wires": [
+            [
+                "b7811129d209e4ab"
+            ]
+        ]
+    }
+]

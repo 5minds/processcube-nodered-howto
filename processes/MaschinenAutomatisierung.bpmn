@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="MaschinenAutomatisierung_Definition" targetNamespace="http://bpmn.io/schema/bpmn" exporter="5Minds Studio" exporterVersion="1">
+  <bpmn:collaboration id="Collaboration_1cidyxu" name="">
+    <bpmn:participant id="Participant_0px403d" name="Maschinen Automatisierung" processRef="MaschinenAutomatisierung_Process" />
+  </bpmn:collaboration>
+  <bpmn:process id="MaschinenAutomatisierung_Process" name="Maschinen Automatisierung" isExecutable="true">
+    <bpmn:laneSet>
+      <bpmn:lane id="Lane_1xzf0d3" name="Bediener">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0dv2vdk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>zwischenpruefungDurchfuerung</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>bauteilSchleifen</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1gj1sqv</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_10xfou3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>bauteilEntnehmen</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_04hz7la</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="StartEvent_1" name="Bauteil zurichten">
+      <bpmn:outgoing>Flow_10ejs1z</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_10ejs1z" sourceRef="StartEvent_1" targetRef="Activity_0dv2vdk" />
+    <bpmn:userTask id="Activity_0dv2vdk" name="Maschine rüsten und Bauteil eingelegt">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="bauteilRuestenHeader" type="header" defaultValue="Maschiene rüsten und Bauteil einrichten." />
+          <camunda:formField id="maschineGeruestet" label="Maschine gerüstet?" type="boolean" />
+          <camunda:formField id="bauteilEingrichtet" label="Bauteil korrekt eingerichtet?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_10ejs1z</bpmn:incoming>
+      <bpmn:outgoing>Flow_07fe71w</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_07fe71w" sourceRef="Activity_0dv2vdk" targetRef="Gateway_1gj1sqv" />
+    <bpmn:sequenceFlow id="Flow_00mv0ya" sourceRef="bauteilSchleifen" targetRef="zwischenpruefungDurchfuerung" />
+    <bpmn:callActivity id="zwischenpruefungDurchfuerung" name="Zwischenprüfung durchführen" calledElement="Zwischenpruefung_Process">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="startEventId" value="bauteilPruefungGestartet" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00mv0ya</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qdj2s9</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:serviceTask id="bauteilSchleifen" name="Bauteil schleifen" camunda:type="external" camunda:topic="bauteil-schleifen">
+      <bpmn:incoming>Flow_1oleu69</bpmn:incoming>
+      <bpmn:outgoing>Flow_00mv0ya</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_1gj1sqv">
+      <bpmn:incoming>Flow_07fe71w</bpmn:incoming>
+      <bpmn:incoming>Flow_1va3dvr</bpmn:incoming>
+      <bpmn:outgoing>Flow_1oleu69</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1oleu69" sourceRef="Gateway_1gj1sqv" targetRef="bauteilSchleifen" />
+    <bpmn:exclusiveGateway id="Gateway_10xfou3" name="Prüfung erfolgreich?" default="Flow_1rmlrph">
+      <bpmn:incoming>Flow_0qdj2s9</bpmn:incoming>
+      <bpmn:outgoing>Flow_1va3dvr</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1rmlrph</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0qdj2s9" sourceRef="zwischenpruefungDurchfuerung" targetRef="Gateway_10xfou3" />
+    <bpmn:sequenceFlow id="Flow_1va3dvr" name="Nein" sourceRef="Gateway_10xfou3" targetRef="Gateway_1gj1sqv">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">return token.history.zwischenpruefungDurchfuerung.result === false;</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rmlrph" name="Ja" sourceRef="Gateway_10xfou3" targetRef="bauteilEntnehmen" />
+    <bpmn:sequenceFlow id="Flow_0rfbq8r" sourceRef="bauteilEntnehmen" targetRef="Event_04hz7la" />
+    <bpmn:userTask id="bauteilEntnehmen" name="Bauteil entnehmen">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="bauteilEntnehmenHeader" type="header" defaultValue="Bauteil entnehmen" />
+          <camunda:formField id="bauteilEntnommen" label="Wurde das Bauteil aus Maschine entnommen?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1rmlrph</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rfbq8r</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_04hz7la" name="Bauteil zugerichtet">
+      <bpmn:incoming>Flow_0rfbq8r</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1cidyxu">
+      <bpmndi:BPMNShape id="Participant_0px403d_di" bpmnElement="Participant_0px403d" isHorizontal="true">
+        <dc:Bounds x="5" y="4" width="1173" height="346" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1xzf0d3_di" bpmnElement="Lane_1xzf0d3" isHorizontal="true">
+        <dc:Bounds x="35" y="4" width="1143" height="346" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="92" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="69" y="195" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1wsay0d_di" bpmnElement="Activity_0dv2vdk">
+        <dc:Bounds x="180" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03m0jl0_di" bpmnElement="zwischenpruefungDurchfuerung">
+        <dc:Bounds x="565" y="130" width="110" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mndvhf_di" bpmnElement="bauteilSchleifen">
+        <dc:Bounds x="390" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1gj1sqv_di" bpmnElement="Gateway_1gj1sqv" isMarkerVisible="true">
+        <dc:Bounds x="315" y="145" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_10xfou3_di" bpmnElement="Gateway_10xfou3" isMarkerVisible="true">
+        <dc:Bounds x="755" y="145" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="751" y="202" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ylssfn_di" bpmnElement="bauteilEntnehmen">
+        <dc:Bounds x="870" y="130" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mo7m6r_di" bpmnElement="Event_04hz7la">
+        <dc:Bounds x="1042" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1033" y="195" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_10ejs1z_di" bpmnElement="Flow_10ejs1z">
+        <di:waypoint x="128" y="170" />
+        <di:waypoint x="180" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07fe71w_di" bpmnElement="Flow_07fe71w">
+        <di:waypoint x="280" y="170" />
+        <di:waypoint x="315" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00mv0ya_di" bpmnElement="Flow_00mv0ya">
+        <di:waypoint x="490" y="170" />
+        <di:waypoint x="565" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oleu69_di" bpmnElement="Flow_1oleu69">
+        <di:waypoint x="365" y="170" />
+        <di:waypoint x="390" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qdj2s9_di" bpmnElement="Flow_0qdj2s9">
+        <di:waypoint x="675" y="170" />
+        <di:waypoint x="755" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1va3dvr_di" bpmnElement="Flow_1va3dvr">
+        <di:waypoint x="780" y="145" />
+        <di:waypoint x="780" y="90" />
+        <di:waypoint x="340" y="90" />
+        <di:waypoint x="340" y="145" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="748" y="123" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rmlrph_di" bpmnElement="Flow_1rmlrph">
+        <di:waypoint x="805" y="170" />
+        <di:waypoint x="870" y="170" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="832" y="152" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rfbq8r_di" bpmnElement="Flow_0rfbq8r">
+        <di:waypoint x="970" y="170" />
+        <di:waypoint x="1042" y="170" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
