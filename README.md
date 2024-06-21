@@ -2,6 +2,8 @@
 
 Diese Projekt enthält die Grundlage für das processCube® - Node-RED - HowTo - Video.
 
+Die `5Minds Engine` übernimmt die Automatisierung des fachlich-beschriebenen Prozess und die `Low-Code Plattform Node-RED` die technische Automatisierung.
+
 Neben den Prozessen für die 5Minds Engine und den Flows für Node-RED, enthält das Projekt eine Docker-Compose-Datei, mit der die Umgebung des HowTos einfach aufgesetzt werden kann.
 
 Der Ordner `processes` enthält zwei Prozesse. Der Prozess `MaschinenAutomatisierung.bpmn` enthält die Prozessbeschreibung für das Schleifen eines Bauteils.
