@@ -1,42 +1,47 @@
-This is a [ProcessCube App](https://processcube.io/) project bootstrapped with [`create-processcube-app`](https://processcube.io/docs/app-sdk/create-processcube-app).
+# ProcessCube® - Node-RED - HowTo - Basic Automation
 
-## Getting Started
+Diese Projekt enthält die Grundlage für das processCube® - Node-RED - HowTo - Video.
 
-If the app contains a `docker-compose.yml` file, you should first bring up the corresponding Docker containers:
+Neben den Prozessen für die 5Minds Engine und den Flows für Node-RED, enthält das Projekt eine Docker-Compose-Datei, mit der die Umgebung des HowTos einfach aufgesetzt werden kann.
+
+Der Ordner `processes` enthält zwei Prozesse. Der Prozess `MaschinenAutomatisierung.bpmn` enthält die Prozessbeschreibung für das Schleifen eines Bauteils.
+Dieser Prozess enthält einge User-Task die Masken für die Interaktion mit dem Bediener anbieten und einen Service-Task der einen Automatisierungsschritt darstellt.
+
+![MaschinenAutomatisierung-Prozess](./MaschinenAutomatisierung.png "BPMN Prozess MaschinenAutomatisierung")
+
+Mit der Call-Activity wird der Subprozess `Zwischenpruefung.bpmn` aufgerufen.
+
+Der Zwischenprüfungsprozess enthält ebenfalls einen Automatisierungsschritt und eine Eingabemaske für das Auswerten der Prüfwerte.
+
+![Zwischenprüfungs-Prozess](./Zwischenpruefung.png "BPMN Prozess Zwischenpruefung")
+
+Die Automatisierungs-Schritte sind nach dem External-Task-Handler-Pattern in den Node-RED Flows `Bauteil schleifen` und `Bauteil einmessen` modelliert.
+
+![Bauteil schleifen Flow](./BauteilSchleifenFlow.png "Node-RED Flow Bauteil schleifen")
+
+Der `Bauteil schleifen`-Flow enthält die Knoten für das Abbonieren des External-Task-Topics und dem Rückmelden des Abschluss des Handlings.
+Die Automatisierung der Maschine ist nur mit einem Delay-Knoten emuliert.
+
+![Bauteil einmessen Flow](./BauteilEinmessenFlow.png "Node-RED Flow Bauteil einmessen")
+
+Der `Bauteil einmessen`-Flow enthält ebenfalls die Knoten für das External-Task-Handling und Automatisierungs-Schritte die das Messen des Bauteils in der Maschine und der Analyse des Ergebnisses darstellen.
+
+## Vorraussetzungen
+
+- Installiertes 5Minds-Studio (https://processcube.io/)
+- Installierter Docker-Client oder verlgeichbares (z.B. Podman)
+
+## Starten der Container
+
+Im Repository ist eine `docker-compose.yml` Datei enthalten, diese kann mit Docker ausgeführt werden.
 
 ```bash
 docker compose up -d
 ```
 
-After that, you can build and start the app with the following commands:
+Anschließend ist es möglich sich mit dem 5Minds Studio mit der Engine unter `http://localhost:8000` zu verbinden und Node-RED sollte unter `http://localhost:1880` erreichbar sein.
 
-```bash
-npm run build && npm run start
-```
+## Prozesse ausführen
 
-For local development, use the following command:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js & ProcessCube, take a look at the following resources:
-
-- [ProcessCube Documentation](https://processcube.io/docs/intro) - learn about ProcessCube features and API.
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-## Helpful information about your chosen extensions
-
-- [About 5Minds-Authority](https://processcube.io/docs/authority)
-- [About 5Minds-Engine](https://processcube.io/docs/engine)
-- [About External Tasks](https://processcube.io/docs/app-sdk/samples/nextjs/external-task-adapter-with-nextjs)
-- [About Next UI](https://processcube.io/docs/solutions/styling/next-ui)
-- [About Tailwind UI](https://processcube.io/docs/solutions/styling/tailwind-ui)
-- [About ESlint](https://eslint.org/)
+Die Prozess sind bereits in der Engine und Node-RED veröffenlicht.
+Der `Maschinen Automatisierung` kann dann direkt über das Debug-Symbol gestartet werden, die User-Tasks können direkt im Studio ausgefüllt werden.
